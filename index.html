@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bond Web Service</title>
+  <style>
+    body { font-family: georgia; }
+
+  </style>
+</head>
+<body>
+  <h1>Bond Web Service</h1>
+  <a href="year" class="category">Bond Films By Year</a><br />
+  <a href="box" class="category">Bond Films By International Box Office Totals</a>
+  <h3 id="filmtitle">Title Will Go Here</h3>
+  <div id="films"><p>Films will go here</p></div>
+  <div id="output">Results go here</div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".category").forEach(link => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          const cat = this.getAttribute("href");
+          loadAJAX(cat);
+        });
+      });
+    });
+
+    var url = "https://newmanix.com/classes/it122/bond-web-service/";
+    async function loadAJAX(cat) {
+      const endpoint = url + "api.php?cat=" + cat;
+      try {
+        const response = await fetch(endpoint, { method: "GET", mode: "cors" });
+        if (!response.ok) throw new Error("HTTP error " + response.status);
+        const data = await response.json();
+        console.log(data);
+      } catch (err) {
+        document.getElementById("output").innerText = "Error loading data: " + err;
+      }
+    }
+
+  </script>
+</body>
+</html>
