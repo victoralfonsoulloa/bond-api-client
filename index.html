@@ -1,45 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Bond Web Service</title>
-  <style>
-    body { font-family: georgia; }
-
-  </style>
+    <meta charset="UTF-8">
+    <title>Bond Web Service</title>
+    <style>
+        body {
+            font-family: georgia;
+        }
+        
+        .film {
+            border: 1px solid #E77DC2;
+            border-radius: 5px;
+            padding: 5px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .pic {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+        
+        #loader {
+            display: none;
+            margin: 1em auto;
+            text-align: center;
+        }
+        
+        .pic img {
+            max-width: 50px;
+        }
+    </style>
 </head>
+
 <body>
-  <h1>Bond Web Service</h1>
-  <a href="year" class="category">Bond Films By Year</a><br />
-  <a href="box" class="category">Bond Films By International Box Office Totals</a>
-  <h3 id="filmtitle">Title Will Go Here</h3>
-  <div id="films"><p>Films will go here</p></div>
-  <div id="output">Results go here</div>
+    <h1>Bond Web Service</h1>
+    <a href="year" class="category">Bond Films By Year</a><br />
+    <a href="box" class="category">Bond Films By International Box Office Totals</a>
+    <div id="loader">
+        <img src="images/spinner.gif" alt="Loading..." />
+    </div>
+    <h3 id="filmtitle">Title Will Go Here</h3>
+    <div id="films">
+        <p>Films will go here</p>
+    </div>
+    <div id="output">Results go here</div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      document.querySelectorAll(".category").forEach(link => {
-        link.addEventListener("click", function (e) {
-          e.preventDefault();
-          const cat = this.getAttribute("href");
-          loadAJAX(cat);
+    <div class="film">
+        <b>Film</b>: 1<br>
+        <b>Title</b>: Data<br>
+        <b>Year</b>: Data<br>
+        <b>Bond</b>: Data<br>
+        <b>Director</b>: Data<br>
+        <b>Producer</b>: Data<br>
+        <b>Writers</b>: Data<br>
+        <b>Composer</b>: Data<br>
+        <b>Budget</b>: Data<br>
+        <b>Box Office</b>: Data<br>
+        <div class="pic"><img src="https://newmanix.com/classes/it122/bond-web-service/"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".category").forEach(link => {
+                link.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    const cat = this.getAttribute("href");
+                    loadAJAX(cat);
+                });
+            });
         });
-      });
-    });
 
-    var url = "https://newmanix.com/classes/it122/bond-web-service/";
-    async function loadAJAX(cat) {
-      const endpoint = url + "api.php?cat=" + cat;
-      try {
-        const response = await fetch(endpoint, { method: "GET", mode: "cors" });
-        if (!response.ok) throw new Error("HTTP error " + response.status);
-        const data = await response.json();
-        console.log(data);
-      } catch (err) {
-        document.getElementById("output").innerText = "Error loading data: " + err;
-      }
-    }
+        // var url = "https://github.com/barbaramania/bond-api-clihttps://verbose-enigma-w44wwv69gg93gvjv-3000.app.github.dev/";
+        var url = "https://newmanix.com/classes/it122/bond-web-service/";
+        async function loadAJAX(cat) {
+            document.getElementById("output").innerText = "";
+            document.getElementById("filmtitle").innerText = "";
+            document.getElementById("loader").style.display = "block";
 
-  </script>
+            const endpoint = url + "api.php?cat=" + cat;
+            try {
+                const response = await fetch(endpoint, {
+                    method: "GET",
+                    mode: "cors"
+                });
+                if (!response.ok) throw new Error("HTTP error " + response.status);
+                const data = await response.json();
+                console.log(data);
+                document.getElementById("filmtitle").innerHTML = data.title;
+
+                data.films.forEach(film => {
+                    const filmHTML = bondTemplate(film);
+                    document.getElementById("output").innerHTML += filmHTML;
+                });
+            } catch (err) {
+                document.getElementById("output").innerText = "Error loading data: " + err;
+            } finally {
+                document.getElementById("loader").style.display = "none";
+            }
+
+            function bondTemplate(film) {
+                return `<div class="film">
+        <b>Film</b>: ${film.Film}<br>
+        <b>Title</b>: ${film.Title}<br>
+        <b>Year</b>: ${film.Year}<br>
+        <b>Bond</b>: ${film.Bond}<br>
+        <b>Director</b>: ${film.Director}<br>
+        <b>Producer</b>: ${film.Producer}<br>
+        <b>Writers</b>: ${film.Writers}<br>
+        <b>Composer</b>: ${film.Composer}<br>
+        <b>Budget</b>: ${film.Budget}<br>
+        <div class="pic"><img src="${url}thumbnails/${film.Image}"></div>
+    </div>`;
+            }
+        }
+    </script>
 </body>
+
 </html>
